@@ -79,12 +79,11 @@ function formatBalance(amount) {
         return "0.00";
     }
     
-    // Based on real data analysis:
-    // 399730489300000 API -> 399.73 website 
-    // This means: 399730489300000 / 1000000000000 = 399.730489
-    // So we need to divide by 1e12 and handle precision
-    const actualAmount = rawAmount / 1e12;
-    console.log('🔍 DEBUG actualAmount after /1e12:', actualAmount);
+    // CORRECTED: API returns values in Wei format (1e18 scale)
+    // 399730489300000000000 API -> 399.73 website 
+    // This means: 399730489300000000000 / 1e18 = 399.73
+    const actualAmount = rawAmount / 1e18;
+    console.log('🔍 DEBUG actualAmount after /1e18:', actualAmount);
     
     // Return the number with 2 decimal places
     const result = actualAmount.toFixed(2);

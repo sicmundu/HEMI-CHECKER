@@ -77,22 +77,10 @@ function formatBalance(amount) {
         return "0.00";
     }
     
-    // Auto-detect the scale based on the number magnitude
-    let actualAmount;
-    
-    if (rawAmount >= 1e15) {
-        // Very large numbers (like 399730489300000) - divide by 1e12
-        actualAmount = rawAmount / 1e12;
-    } else if (rawAmount >= 1e9) {
-        // Large numbers (like 2427553393000) - divide by 1e9  
-        actualAmount = rawAmount / 1e9;
-    } else if (rawAmount >= 1e6) {
-        // Medium numbers (like 2427553393) - divide by 1e6
-        actualAmount = rawAmount / 1e6;
-    } else {
-        // Small numbers - use as is
-        actualAmount = rawAmount;
-    }
+    // Based on real data analysis:
+    // 399730489300000 API -> 399.73 website (divide by 1e12)
+    // All Hemi API values appear to use 1e12 scale
+    const actualAmount = rawAmount / 1e12;
     
     // Return the number with 2 decimal places
     return actualAmount.toFixed(2);

@@ -70,11 +70,31 @@ function getRandomMessage(type) {
 }
 
 function formatBalance(amount) {
-    // Convert from API format (where API value needs to be divided by 1e6)
-    // Example: 2427553393 API -> 2427.55 website display
-    const actualAmount = parseFloat(amount) / 1e6;
+    const rawAmount = parseFloat(amount);
     
-    // Return the number with 2 decimal places, no M/K formatting
+    // Handle zero or invalid amounts
+    if (!rawAmount || rawAmount === 0) {
+        return "0.00";
+    }
+    
+    // Auto-detect the scale based on the number magnitude
+    let actualAmount;
+    
+    if (rawAmount >= 1e15) {
+        // Very large numbers (like 399730489300000) - divide by 1e12
+        actualAmount = rawAmount / 1e12;
+    } else if (rawAmount >= 1e9) {
+        // Large numbers (like 2427553393000) - divide by 1e9  
+        actualAmount = rawAmount / 1e9;
+    } else if (rawAmount >= 1e6) {
+        // Medium numbers (like 2427553393) - divide by 1e6
+        actualAmount = rawAmount / 1e6;
+    } else {
+        // Small numbers - use as is
+        actualAmount = rawAmount;
+    }
+    
+    // Return the number with 2 decimal places
     return actualAmount.toFixed(2);
 }
 
@@ -121,14 +141,18 @@ function createSummaryMessage(results) {
     const eligible = results.filter(r => r.success && r.amount > 0);
     const notEligible = results.filter(r => r.success && r.amount === 0);
     const errors = results.filter(r => !r.success);
-    // Convert total amount from API format to actual display format (divide by 1e6)
-    const totalAmount = eligible.reduce((sum, r) => sum + (parseFloat(r.amount) / 1e6), 0);
+    
+    // Calculate total amount using the smart conversion
+    const totalAmount = eligible.reduce((sum, r) => {
+        const convertedAmount = parseFloat(formatBalance(r.amount));
+        return sum + convertedAmount;
+    }, 0);
     
     let summary = `\n${EMOJIS.lightning}${EMOJIS.explosion} **ABSOLUTELY INSANE SUMMARY!!!** ${EMOJIS.explosion}${EMOJIS.lightning}\n\n`;
     
     if (eligible.length > 0) {
         summary += `${EMOJIS.diamond}${EMOJIS.fire} **LOADED WALLETS:** ${eligible.length} (YOU'RE RICH AF!)\n`;
-        summary += `${EMOJIS.money}${EMOJIS.rocket} **TOTAL FUCKING HEMI:** ${formatBalance(totalAmount * 1e6)}\n`;
+        summary += `${EMOJIS.money}${EMOJIS.rocket} **TOTAL FUCKING HEMI:** ${totalAmount.toFixed(2)}\n`;
     }
     
     if (notEligible.length > 0) {

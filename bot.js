@@ -73,11 +73,7 @@ function formatBalance(amount) {
     // Convert from API format (where 200000000000000 = 200.00 on website)
     const actualAmount = parseFloat(amount) / 1e12;
     
-    if (actualAmount >= 1000000) {
-        return `${(actualAmount / 1000000).toFixed(2)}M`;
-    } else if (actualAmount >= 1000) {
-        return `${(actualAmount / 1000).toFixed(2)}K`;
-    }
+    // Return the number with 2 decimal places, no M/K formatting
     return actualAmount.toFixed(2);
 }
 

@@ -1,0 +1,30 @@
+{
+  "name": "hemi-checker-bot",
+  "version": "1.0.0",
+  "description": "The most INSANE Telegram bot to check Hemi balances with WILD energy!",
+  "main": "bot.js",
+  "scripts": {
+    "start": "node bot.js",
+    "dev": "node --watch bot.js",
+    "setup": "node setup.js"
+  },
+  "keywords": [
+    "telegram",
+    "bot",
+    "hemi",
+    "airdrop",
+    "checker",
+    "crypto"
+  ],
+  "author": "HEMI CHECKER Team",
+  "license": "MIT",
+  "dependencies": {
+    "node-telegram-bot-api": "^0.64.0",
+    "axios": "^1.6.2",
+    "ethers": "^6.8.1",
+    "dotenv": "^16.3.1"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  }
+}

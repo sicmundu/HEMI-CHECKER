@@ -70,8 +70,9 @@ function getRandomMessage(type) {
 }
 
 function formatBalance(amount) {
-    // Convert from API format (where 200000000000000 = 200.00 on website)
-    const actualAmount = parseFloat(amount) / 1e12;
+    // Convert from API format (where API value needs to be divided by 1e6)
+    // Example: 2427553393 API -> 2427.55 website display
+    const actualAmount = parseFloat(amount) / 1e6;
     
     // Return the number with 2 decimal places, no M/K formatting
     return actualAmount.toFixed(2);
@@ -120,14 +121,14 @@ function createSummaryMessage(results) {
     const eligible = results.filter(r => r.success && r.amount > 0);
     const notEligible = results.filter(r => r.success && r.amount === 0);
     const errors = results.filter(r => !r.success);
-    // Convert total amount from API format to actual display format
-    const totalAmount = eligible.reduce((sum, r) => sum + (parseFloat(r.amount) / 1e12), 0);
+    // Convert total amount from API format to actual display format (divide by 1e6)
+    const totalAmount = eligible.reduce((sum, r) => sum + (parseFloat(r.amount) / 1e6), 0);
     
     let summary = `\n${EMOJIS.lightning}${EMOJIS.explosion} **ABSOLUTELY INSANE SUMMARY!!!** ${EMOJIS.explosion}${EMOJIS.lightning}\n\n`;
     
     if (eligible.length > 0) {
         summary += `${EMOJIS.diamond}${EMOJIS.fire} **LOADED WALLETS:** ${eligible.length} (YOU'RE RICH AF!)\n`;
-        summary += `${EMOJIS.money}${EMOJIS.rocket} **TOTAL FUCKING HEMI:** ${formatBalance(totalAmount * 1e12)}\n`;
+        summary += `${EMOJIS.money}${EMOJIS.rocket} **TOTAL FUCKING HEMI:** ${formatBalance(totalAmount * 1e6)}\n`;
     }
     
     if (notEligible.length > 0) {

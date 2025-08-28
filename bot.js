@@ -70,7 +70,9 @@ function getRandomMessage(type) {
 }
 
 function formatBalance(amount) {
+    console.log('🔍 DEBUG formatBalance input:', amount, 'type:', typeof amount);
     const rawAmount = parseFloat(amount);
+    console.log('🔍 DEBUG rawAmount after parseFloat:', rawAmount);
     
     // Handle zero or invalid amounts
     if (!rawAmount || rawAmount === 0) {
@@ -82,9 +84,12 @@ function formatBalance(amount) {
     // This means: 399730489300000 / 1000000000000 = 399.730489
     // So we need to divide by 1e12 and handle precision
     const actualAmount = rawAmount / 1e12;
+    console.log('🔍 DEBUG actualAmount after /1e12:', actualAmount);
     
     // Return the number with 2 decimal places
-    return actualAmount.toFixed(2);
+    const result = actualAmount.toFixed(2);
+    console.log('🔍 DEBUG final result:', result);
+    return result;
 }
 
 // API functions
@@ -96,6 +101,9 @@ async function checkHemiDrop(wallet) {
         );
         
         const amount = response.data?.amount || "0";
+        console.log('🔍 DEBUG API response for', wallet.slice(0, 6), ':', response.data);
+        console.log('🔍 DEBUG extracted amount:', amount, 'type:', typeof amount);
+        
         return {
             wallet,
             amount: parseFloat(amount), // Store raw API amount

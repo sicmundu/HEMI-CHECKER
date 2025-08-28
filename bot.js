@@ -70,13 +70,15 @@ function getRandomMessage(type) {
 }
 
 function formatBalance(amount) {
-    const num = parseFloat(amount);
-    if (num >= 1000000) {
-        return `${(num / 1000000).toFixed(2)}M`;
-    } else if (num >= 1000) {
-        return `${(num / 1000).toFixed(2)}K`;
+    // Convert from API format (where 200000000000000 = 200.00 on website)
+    const actualAmount = parseFloat(amount) / 1e12;
+    
+    if (actualAmount >= 1000000) {
+        return `${(actualAmount / 1000000).toFixed(2)}M`;
+    } else if (actualAmount >= 1000) {
+        return `${(actualAmount / 1000).toFixed(2)}K`;
     }
-    return num.toFixed(2);
+    return actualAmount.toFixed(2);
 }
 
 // API functions
@@ -90,7 +92,7 @@ async function checkHemiDrop(wallet) {
         const amount = response.data?.amount || "0";
         return {
             wallet,
-            amount: parseFloat(amount),
+            amount: parseFloat(amount), // Store raw API amount
             success: true,
             error: null
         };
@@ -122,13 +124,14 @@ function createSummaryMessage(results) {
     const eligible = results.filter(r => r.success && r.amount > 0);
     const notEligible = results.filter(r => r.success && r.amount === 0);
     const errors = results.filter(r => !r.success);
-    const totalAmount = eligible.reduce((sum, r) => sum + r.amount, 0);
+    // Convert total amount from API format to actual display format
+    const totalAmount = eligible.reduce((sum, r) => sum + (parseFloat(r.amount) / 1e12), 0);
     
     let summary = `\n${EMOJIS.lightning}${EMOJIS.explosion} **ABSOLUTELY INSANE SUMMARY!!!** ${EMOJIS.explosion}${EMOJIS.lightning}\n\n`;
     
     if (eligible.length > 0) {
         summary += `${EMOJIS.diamond}${EMOJIS.fire} **LOADED WALLETS:** ${eligible.length} (YOU'RE RICH AF!)\n`;
-        summary += `${EMOJIS.money}${EMOJIS.rocket} **TOTAL FUCKING HEMI:** ${formatBalance(totalAmount)}\n`;
+        summary += `${EMOJIS.money}${EMOJIS.rocket} **TOTAL FUCKING HEMI:** ${formatBalance(totalAmount * 1e12)}\n`;
     }
     
     if (notEligible.length > 0) {

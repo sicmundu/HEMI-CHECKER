@@ -78,8 +78,9 @@ function formatBalance(amount) {
     }
     
     // Based on real data analysis:
-    // 399730489300000 API -> 399.73 website (divide by 1e12)
-    // All Hemi API values appear to use 1e12 scale
+    // 399730489300000 API -> 399.73 website 
+    // This means: 399730489300000 / 1000000000000 = 399.730489
+    // So we need to divide by 1e12 and handle precision
     const actualAmount = rawAmount / 1e12;
     
     // Return the number with 2 decimal places
